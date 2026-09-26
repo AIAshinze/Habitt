@@ -67,7 +67,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void _showToast(String message) {
     Fluttertoast.showToast(
       msg: message,
-      toastLength: Toast.LENGTH_SHORT,
+      toastLength: Toast.LENGTH_LONG,
       gravity: ToastGravity.BOTTOM,
       backgroundColor: Colors.red,
       textColor: Colors.white,
@@ -282,25 +282,39 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Widget _buildCountryDropdown() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(30),
       ),
-      child: DropdownButton<String>(
-        value: _country,
-        icon: Icon(Icons.arrow_drop_down, color: Colors.blue.shade700),
-        isExpanded: true,
-        underline: SizedBox(),
-        items: _countries.map((String value) {
-          return DropdownMenuItem<String>(value: value, child: Text(value));
-        }).toList(),
-        onChanged: (newValue) {
-          setState(() {
-            _country = newValue!;
-          });
-        },
-      ),
+      child: _countries.isEmpty
+          ? const Padding(
+              padding: EdgeInsets.symmetric(vertical: 16),
+              child: Text(
+                'Loading countries...',
+                style: TextStyle(color: Colors.grey),
+              ),
+            )
+          : DropdownButton<String>(
+              value: _countries.contains(_country) ? _country : null,
+              hint: const Text('Select Country'),
+              icon: Icon(Icons.arrow_drop_down, color: Colors.blue.shade700),
+              isExpanded: true,
+              underline: const SizedBox(),
+              items: _countries.map((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+              onChanged: (newValue) {
+                if (newValue != null) {
+                  setState(() {
+                    _country = newValue;
+                  });
+                }
+              },
+            ),
     );
   }
 }

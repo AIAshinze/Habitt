@@ -125,22 +125,33 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                   ),
                 ],
               ),
-              child: DropdownButton<String>(
-                value: _country,
-                isExpanded: true,
-                underline: const SizedBox(),
-                items: _countries.map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                onChanged: (newValue) {
-                  setState(() {
-                    _country = newValue!;
-                  });
-                },
-              ),
+              child: _countries.isEmpty
+                  ? const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                      child: Text(
+                        'Loading countries...',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    )
+                  : DropdownButton<String>(
+                      value: _countries.contains(_country) ? _country : null,
+                      hint: const Text('Select Country'),
+                      isExpanded: true,
+                      underline: const SizedBox(),
+                      items: _countries.map((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                      onChanged: (newValue) {
+                        if (newValue != null) {
+                          setState(() {
+                            _country = newValue;
+                          });
+                        }
+                      },
+                    ),
             ),
             const SizedBox(height: 24),
             ElevatedButton(
