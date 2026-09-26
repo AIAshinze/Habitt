@@ -27,18 +27,44 @@ class _HabitTrackerScreenState extends State<HabitTrackerScreen> {
   @override
   void initState() {
     super.initState();
+    _loadUserData();
   }
 
   Future<void> _loadUserData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    Map<String, String> parsedSelectedHabits = {};
+    Map<String, String> parsedCompletedHabits = {};
+
+    try {
+      final selectedHabitsString = prefs.getString('selectedHabitsMap');
+      if (selectedHabitsString != null && selectedHabitsString.isNotEmpty) {
+        final decoded = jsonDecode(selectedHabitsString);
+        if (decoded is Map) {
+          parsedSelectedHabits = Map<String, String>.from(decoded);
+        }
+      }
+    } catch (_) {
+      parsedSelectedHabits = {};
+    }
+
+    try {
+      final completedHabitsString = prefs.getString('completedHabitsMap');
+      if (completedHabitsString != null && completedHabitsString.isNotEmpty) {
+        final decoded = jsonDecode(completedHabitsString);
+        if (decoded is Map) {
+          parsedCompletedHabits = Map<String, String>.from(decoded);
+        }
+      }
+    } catch (_) {
+      parsedCompletedHabits = {};
+    }
+
+    if (!mounted) return;
     setState(() {
       name = prefs.getString('name') ?? widget.username;
-      selectedHabitsMap = Map<String, String>.from(
-        jsonDecode(prefs.getString('selectedHabitsMap') ?? '{}'),
-      );
-      completedHabitsMap = Map<String, String>.from(
-        jsonDecode(prefs.getString('completedHabitsMap') ?? '{}'),
-      );
+      selectedHabitsMap = parsedSelectedHabits;
+      completedHabitsMap = parsedCompletedHabits;
     });
   }
 
